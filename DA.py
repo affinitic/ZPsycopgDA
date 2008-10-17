@@ -1,3 +1,4 @@
+#NOCHECK
 # ZPsycopgDA/DA.py - ZPsycopgDA Zope product: Database Connection
 #
 # Copyright (C) 2004 Federico Di Gregorio <fog@initd.org>
@@ -18,7 +19,7 @@
 # See the LICENSE file for details.
 
 
-ALLOWED_PSYCOPG_VERSIONS = ('2.0.6',)
+ALLOWED_PSYCOPG_VERSIONS = ('2.0.7','2.0.8')
 
 import sys
 import time
@@ -34,16 +35,13 @@ from ExtensionClass import Base
 from App.Dialogs import MessageDialog
 from DateTime import DateTime
 
-# Build Zope version in a float for later cheks
-import App
-zope_version = App.version_txt.getZopeVersion()
-zope_version = float("%s.%s" %(zope_version[:2]))
-
 # ImageFile is deprecated in Zope >= 2.9
-if zope_version < 2.9:
-     from ImageFile import ImageFile
-else:
-     from App.ImageFile import ImageFile 
+try:
+    from App.ImageFile import ImageFile
+except ImportError:
+    # Zope < 2.9.  If PIL's installed with a .pth file, we're probably
+    # hosed.
+    from ImageFile import ImageFile
 
 # import psycopg and functions/singletons needed for date/time conversions
 
@@ -60,10 +58,10 @@ manage_addZPsycopgConnectionForm = HTMLFile('dtml/add',globals())
 
 def manage_addZPsycopgConnection(self, id, title, connection_string,
                                  zdatetime=None, tilevel=2,
-                                 check=None, REQUEST=None):
+                                 encoding='', check=None, REQUEST=None):
     """Add a DB connection to a folder."""
     self._setObject(id, Connection(id, title, connection_string,
-                                   zdatetime, check, tilevel))
+                                   zdatetime, check, tilevel, encoding))
     if REQUEST is not None: return self.manage_main(self, REQUEST)
 
 
@@ -79,7 +77,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
     icon              = 'misc_/conn'
 
     def __init__(self, id, title, connection_string,
-                 zdatetime, check=None, tilevel=2, encoding='utf-8'):
+                 zdatetime, check=None, tilevel=2, encoding='UTF-8'):
         self.zdatetime = zdatetime
         self.id = str(id)
         self.edit(title, connection_string, zdatetime,
@@ -91,7 +89,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
     ## connection parameters editing ##
     
     def edit(self, title, connection_string,
-             zdatetime, check=None, tilevel=2, encoding=''):
+             zdatetime, check=None, tilevel=2, encoding='UTF-8'):
         self.title = title
         self.connection_string = connection_string
         self.zdatetime = zdatetime
