@@ -58,7 +58,7 @@ manage_addZPsycopgConnectionForm = HTMLFile('dtml/add',globals())
 
 def manage_addZPsycopgConnection(self, id, title, connection_string,
                                  zdatetime=None, tilevel=2,
-                                 encoding='', check=None, REQUEST=None):
+                                 encoding='UTF-8', check=None, REQUEST=None):
     """Add a DB connection to a folder."""
     self._setObject(id, Connection(id, title, connection_string,
                                    zdatetime, check, tilevel, encoding))
