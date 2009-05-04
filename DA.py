@@ -117,7 +117,7 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
             pass
 
         # check psycopg version and raise exception if does not match
-        if psycopg2.__version__[:5] not in ALLOWED_PSYCOPG_VERSIONS:
+        if psycopg2.__version__[:6].strip() not in ALLOWED_PSYCOPG_VERSIONS:
             raise ImportError("psycopg version mismatch (imported %s)" %
                               psycopg2.__version__)
 
